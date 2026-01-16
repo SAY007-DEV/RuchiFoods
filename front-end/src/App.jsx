@@ -15,7 +15,7 @@ function App() {
       <Sidebar/>
       <Routes>
         <Route path="/Dashboard" element={<Dashboard />} />
-        <Route path='/invoice' element={<Invoices/>}></Route>
+        <Route path='/invoices' element={<Invoices/>}></Route>
       </Routes>
     </>
   )
