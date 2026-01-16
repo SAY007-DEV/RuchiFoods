@@ -5,12 +5,12 @@ import InvoiceItemRow from './InvoiceItemRow';
 import { calculateTotals } from '../utils/helpers';
 
 export default function InvoiceForm({ onClose }) {
-  const { addInvoice } = useInvoices();
+  const { addInvoice, companyDetails, saveCompanySettings } = useInvoices();
   const [formData, setFormData] = useState({
-    companyName: '',
-    companyAddress: '',
-    companyEmail: '',
-    companyPhone: '',
+    companyName: companyDetails?.companyName || '',
+    companyAddress: companyDetails?.companyAddress || '',
+    companyEmail: companyDetails?.companyEmail || '',
+    companyPhone: companyDetails?.companyPhone || '',
     clientName: '',
     clientDetails: '',
     date: '',
@@ -88,6 +88,15 @@ export default function InvoiceForm({ onClose }) {
     e.preventDefault();
     if (validateForm()) {
       addInvoice(formData);
+      
+      // Save company details for future use
+      saveCompanySettings({
+        companyName: formData.companyName,
+        companyAddress: formData.companyAddress,
+        companyEmail: formData.companyEmail,
+        companyPhone: formData.companyPhone
+      });
+
       toast.success('Invoice created successfully!');
       onClose();
     } else {
