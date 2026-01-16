@@ -4,6 +4,7 @@ import viteLogo from '/vite.svg'
 import './App.css'
 import Dashboard from './Components/Dashboard'
 import Sidebar from './Components/Sidebar'
+import { Routes, Route } from 'react-router-dom'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -11,6 +12,9 @@ function App() {
   return (
     <>
       <Sidebar/>
+      <Routes>
+        <Route path="/Dashboard" element={<Dashboard />} />
+      </Routes>
     </>
   )
 }

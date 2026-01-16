@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Home, FileText, Users, Package, BarChart3, Settings, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const navItems = [
-  { name: 'Dashboard', path: '/', icon: Home },
+  { name: 'Dashboard', path: '/Dashboard', icon: Home },
   { name: 'Invoices', path: '/invoices', icon: FileText },
   { name: 'Clients', path: '/clients', icon: Users },
   { name: 'Products / Services', path: '/products', icon: Package },
