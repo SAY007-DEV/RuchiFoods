@@ -1,6 +1,11 @@
 import React, { createContext, useContext, useState } from 'react';
 
-const InvoiceContext = createContext();
+const InvoiceContext = createContext({
+  invoices: [],
+  addInvoice: () => {},
+  deleteInvoice: () => {},
+  getInvoiceById: () => {},
+});
 
 export const useInvoices = () => useContext(InvoiceContext);
 
