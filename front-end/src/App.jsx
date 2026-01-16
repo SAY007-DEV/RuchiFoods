@@ -5,15 +5,17 @@ import './App.css'
 import Dashboard from './Components/Dashboard'
 import Sidebar from './Components/Sidebar'
 import { Routes, Route } from 'react-router-dom'
+import Invoices from './Pages/Invoices'
 
 function App() {
-  const [count, setCount] = useState(0)
+ 
 
   return (
     <>
       <Sidebar/>
       <Routes>
         <Route path="/Dashboard" element={<Dashboard />} />
+        <Route path='/invoice' element={<Invoices/>}></Route>
       </Routes>
     </>
   )
