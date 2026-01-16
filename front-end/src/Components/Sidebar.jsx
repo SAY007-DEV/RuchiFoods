@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Home, FileText, Users, Package, BarChart3, Settings, ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -14,6 +14,11 @@ const navItems = [
 export default function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const location = useLocation();
+
+  useEffect(() => {
+    const width = isCollapsed ? '4rem' : '16rem';
+    document.documentElement.style.setProperty('--sidebar-width', width);
+  }, [isCollapsed]);
 
   return (
     <aside className={`fixed left-0 top-0 h-screen bg-white dark:bg-gray-800 shadow-lg transition-all duration-300 overflow-hidden z-10 ${isCollapsed ? 'w-16' : 'w-64'}`}>
