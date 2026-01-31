@@ -2,6 +2,7 @@
   "name": "backend-project",
   "version": "1.0.0",
   "main": "src/app.js",
+  "type": "module",
   "scripts": {
     "dev": "nodemon app.js"
   },
