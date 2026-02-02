@@ -20,8 +20,9 @@ const Reports = () => {
     try {
       setLoading(true);
       const response = await axios.get('/api/invoices'); // Adjust endpoint as needed
-      setInvoices(response.data);
-      calculateTotalRevenue(response.data);
+      const invoiceData = Array.isArray(response.data) ? response.data : [];
+      setInvoices(invoiceData);
+      calculateTotalRevenue(invoiceData);
       setError(null);
     } catch (err) {
       setError('Failed to fetch invoices. Please try again.');

@@ -8,6 +8,7 @@ import { Routes, Route } from 'react-router-dom'
 import Invoices from './Pages/Invoices'
 import ProductManager from './Pages/ProductManager'
 import Clients from './Pages/Clients'
+import Reports from './Pages/Reports'
 
 function App() {
  
@@ -20,6 +21,7 @@ function App() {
         <Route path='/invoices' element={<Invoices/>}></Route>
         <Route path='/products' element={<ProductManager/>}></Route>
         <Route path='/clients' element={<Clients/>}></Route>
+        <Route path='/reports' element={<Reports/>}></Route>
       </Routes>
     </>
   )
