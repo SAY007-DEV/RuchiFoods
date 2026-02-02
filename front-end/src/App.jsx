@@ -6,6 +6,7 @@ import Dashboard from './Components/Dashboard'
 import Sidebar from './Components/Sidebar'
 import { Routes, Route } from 'react-router-dom'
 import Invoices from './Pages/Invoices'
+import ProductManager from './Pages/ProductManager'
 
 function App() {
  
@@ -16,6 +17,7 @@ function App() {
       <Routes>
         <Route path="/Dashboard" element={<Dashboard />} />
         <Route path='/invoices' element={<Invoices/>}></Route>
+        <Route path='/product' element={<ProductManager/>}></Route>
       </Routes>
     </>
   )
