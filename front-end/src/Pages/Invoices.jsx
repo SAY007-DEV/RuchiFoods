@@ -35,81 +35,90 @@ export default function Invoices() {
     : invoices;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6 transition-all duration-300" style={{ marginLeft: 'var(--sidebar-width, 16rem)' }}>
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Invoices</h2>
-        <button onClick={() => setIsFormOpen(true)} className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
-          Add New Invoice
+    <div className="min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-900 dark:to-slate-800 p-6 transition-all duration-500" style={{ marginLeft: 'var(--sidebar-width, 16rem)' }}>
+      <div className="flex justify-between items-center mb-8">
+        <h2 className="text-3xl font-extrabold text-slate-900 dark:text-slate-100 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          Invoices
+        </h2>
+        <button 
+          onClick={() => setIsFormOpen(true)} 
+          className="px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 font-semibold"
+        >
+          + Add New Invoice
         </button>
       </div>
-      <div className="mb-4">
-        <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Filter by Date</label>
-        <input
-          type="date"
-          value={filterDate}
-          onChange={(e) => setFilterDate(e.target.value)}
-          className="p-2 border rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white"
-        />
-        {filterDate && (
-          <button
-            onClick={() => setFilterDate('')}
-            className="ml-2 px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600"
-          >
-            Clear Filter
-          </button>
-        )}
+      
+      <div className="mb-6">
+        <label className="block text-sm font-semibold mb-2 text-slate-700 dark:text-slate-300">Filter by Date</label>
+        <div className="flex items-center space-x-4">
+          <input
+            type="date"
+            value={filterDate}
+            onChange={(e) => setFilterDate(e.target.value)}
+            className="p-3 border-0 rounded-xl bg-white dark:bg-slate-700 shadow-md focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-900 dark:text-slate-100 transition-all duration-300"
+          />
+          {filterDate && (
+            <button
+              onClick={() => setFilterDate('')}
+              className="px-4 py-2 bg-slate-500 text-white rounded-xl shadow-md hover:bg-slate-600 hover:shadow-lg transition-all duration-300"
+            >
+              Clear Filter
+            </button>
+          )}
+        </div>
       </div>
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white dark:bg-gray-800 shadow rounded border border-gray-200 dark:border-gray-700">
-          <thead className="bg-gray-100 dark:bg-gray-700">
+      
+      <div className="overflow-x-auto bg-white dark:bg-slate-800 rounded-2xl shadow-xl">
+        <table className="min-w-full">
+          <thead className="bg-gradient-to-r from-blue-500 to-purple-500 text-white">
             <tr>
-              <th className="p-3 text-left text-gray-700 dark:text-gray-200">Invoice No</th>
-              <th className="p-3 text-left text-gray-700 dark:text-gray-200">Client Name</th>
-              <th className="p-3 text-left text-gray-700 dark:text-gray-200">Date</th>
-              <th className="p-3 text-left text-gray-700 dark:text-gray-200">Due Date</th>
-              <th className="p-3 text-left text-gray-700 dark:text-gray-200">Amount</th>
-              <th className="p-3 text-left text-gray-700 dark:text-gray-200">Payment Status</th>
-              <th className="p-3 text-left text-gray-700 dark:text-gray-200">Actions</th>
+              <th className="p-4 text-left font-bold rounded-tl-2xl">Invoice No</th>
+              <th className="p-4 text-left font-bold">Client Name</th>
+              <th className="p-4 text-left font-bold">Date</th>
+              <th className="p-4 text-left font-bold">Due Date</th>
+              <th className="p-4 text-left font-bold">Amount</th>
+              <th className="p-4 text-left font-bold">Payment Status</th>
+              <th className="p-4 text-left font-bold rounded-tr-2xl">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+          <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
             {filteredInvoices.length === 0 ? (
               <tr>
-                <td colSpan="7" className="p-3 text-center text-gray-500 dark:text-gray-400">
-                  No invoices found.
+                <td colSpan="7" className="p-8 text-center text-slate-500 dark:text-slate-400 font-medium">
+                  No invoices found. Start by adding one!
                 </td>
               </tr>
             ) : (
               filteredInvoices.map((inv) => {
                 const totals = calculateTotals(inv.items);
                 return (
-                  <tr key={inv.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                    <td className="p-3 text-gray-900 dark:text-white">{inv.number}</td>
-                    <td className="p-3 text-gray-900 dark:text-white">{inv.clientName}</td>
-                    <td className="p-3 text-gray-900 dark:text-white">{inv.date}</td>
-                    <td className="p-3 text-gray-900 dark:text-white">{inv.dueDate || 'N/A'}</td>
-                    <td className="p-3 text-gray-900 dark:text-white">${totals.grandTotal.toFixed(2)}</td>
-                    <td className="p-3">
+                  <tr key={inv.id} className="hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors duration-200">
+                    <td className="p-4 text-slate-900 dark:text-slate-100 font-medium">{inv.number}</td>
+                    <td className="p-4 text-slate-900 dark:text-slate-100">{inv.clientName}</td>
+                    <td className="p-4 text-slate-900 dark:text-slate-100">{inv.date}</td>
+                    <td className="p-4 text-slate-900 dark:text-slate-100">{inv.dueDate || 'N/A'}</td>
+                    <td className="p-4 text-slate-900 dark:text-slate-100 font-semibold">₹{totals.grandTotal.toFixed(2)}</td>
+                    <td className="p-4">
                       <select
                         value={statuses[inv.id] || 'Unpaid'}
                         onChange={(e) => handleStatusChange(inv.id, e.target.value)}
-                        className="p-1 border rounded bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
+                        className="p-2 border-0 rounded-lg bg-slate-100 dark:bg-slate-600 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-900 dark:text-slate-100 transition-all duration-300"
                       >
                         <option value="Unpaid">Unpaid</option>
                         <option value="Paid">Paid</option>
                         <option value="Overdue">Overdue</option>
                       </select>
                     </td>
-                    <td className="p-3 space-x-2">
+                    <td className="p-4 space-x-3">
                       <Link
                         to={`/preview/${inv.id}`}
-                        className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+                        className="px-4 py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 hover:shadow-lg transition-all duration-300 font-medium"
                       >
                         View
                       </Link>
                       <button
                         onClick={() => handleDelete(inv.id)}
-                        className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                        className="px-4 py-2 bg-red-500 text-white rounded-lg shadow-md hover:bg-red-600 hover:shadow-lg transition-all duration-300 font-medium"
                       >
                         Delete
                       </button>
@@ -124,8 +133,8 @@ export default function Invoices() {
 
       {/* Invoice Form Modal */}
       {isFormOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex justify-center items-center p-4">
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl w-full max-w-5xl transform transition-all">
+        <div className="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm z-50 flex justify-center items-center p-4 animate-fade-in">
+          <div className="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-2xl w-full max-w-6xl transform transition-all duration-500 scale-100 hover:scale-105">
             <InvoiceForm onClose={() => setIsFormOpen(false)} />
           </div>
         </div>
