@@ -18,7 +18,7 @@ export default function Clients() {
   const [errors, setErrors] = useState({});
 
   // Filtered and sorted clients
-  const filteredClients = clients
+  const filteredClients = (clients || [])
     .filter(client =>
       client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       client.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
