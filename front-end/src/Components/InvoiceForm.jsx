@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { useInvoices } from '../context/InvoiceContext';
 import InvoiceItemRow from './InvoiceItemRow';
@@ -13,13 +13,24 @@ export default function InvoiceForm({ onClose }) {
     companyPhone: companyDetails?.companyPhone || '',
     clientName: '',
     clientDetails: '',
-    date: '',
+    date: new Date().toISOString().split('T')[0], // Prefill with current date
     dueDate: '',
     notes: '',
     terms: '',
     items: [{ description: '', quantity: 1, price: 0, tax: 0, discount: 0 }]
   });
   const [errors, setErrors] = useState({});
+
+  // Prefill company details on mount or when companyDetails changes
+  useEffect(() => {
+    setFormData(prev => ({
+      ...prev,
+      companyName: companyDetails?.companyName || '',
+      companyAddress: companyDetails?.companyAddress || '',
+      companyEmail: companyDetails?.companyEmail || '',
+      companyPhone: companyDetails?.companyPhone || '',
+    }));
+  }, [companyDetails]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -108,22 +119,29 @@ export default function InvoiceForm({ onClose }) {
 
   return (
     <>
-      <div className="flex justify-between items-center mb-6 border-b pb-4 dark:border-gray-700">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Create New Invoice</h2>
-        <button onClick={onClose} className="text-gray-500 hover:text-gray-800 dark:hover:text-gray-200 text-3xl leading-none">&times;</button>
+      <div className="flex justify-between items-center mb-8 border-b pb-4 dark:border-slate-700">
+        <h2 className="text-3xl font-extrabold text-slate-900 dark:text-slate-100 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          Create New Invoice
+        </h2>
+        <button 
+          onClick={onClose} 
+          className="text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 text-4xl leading-none hover:scale-110 transition-all duration-300"
+        >
+          &times;
+        </button>
       </div>
-      <form onSubmit={handleSubmit} className="space-y-6 max-h-[75vh] overflow-y-auto pr-4">
+      <form onSubmit={handleSubmit} className="space-y-8 max-h-[75vh] overflow-y-auto pr-4">
         {/* Company Details */}
-        <div className="bg-gray-100 dark:bg-gray-900/50 p-4 rounded-lg">
-          <h3 className="font-bold mb-2 text-gray-900 dark:text-white">Company Details (Optional)</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="bg-gradient-to-r from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 p-6 rounded-2xl shadow-lg">
+          <h3 className="font-bold mb-4 text-slate-900 dark:text-slate-100 text-lg">Company Details</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <input
                 name="companyName"
                 placeholder="Company Name"
                 value={formData.companyName}
                 onChange={handleChange}
-                className="w-full p-2 border rounded bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
+                className="w-full p-3 border-0 rounded-xl bg-white dark:bg-slate-600 shadow-md focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-900 dark:text-slate-100 transition-all duration-300"
               />
             </div>
             <div>
@@ -133,9 +151,9 @@ export default function InvoiceForm({ onClose }) {
                 placeholder="Company Email"
                 value={formData.companyEmail}
                 onChange={handleChange}
-                className="w-full p-2 border rounded bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
+                className="w-full p-3 border-0 rounded-xl bg-white dark:bg-slate-600 shadow-md focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-900 dark:text-slate-100 transition-all duration-300"
               />
-              {errors.companyEmail && <p className="text-red-500 text-sm mt-1">{errors.companyEmail}</p>}
+              {errors.companyEmail && <p className="text-red-500 text-sm mt-2">{errors.companyEmail}</p>}
             </div>
             <div>
               <textarea
@@ -143,7 +161,8 @@ export default function InvoiceForm({ onClose }) {
                 placeholder="Company Address"
                 value={formData.companyAddress}
                 onChange={handleChange}
-                className="w-full p-2 border rounded bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
+                className="w-full p-3 border-0 rounded-xl bg-white dark:bg-slate-600 shadow-md focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-900 dark:text-slate-100 transition-all duration-300 resize-none"
+                rows="3"
               />
             </div>
             <div>
@@ -152,27 +171,27 @@ export default function InvoiceForm({ onClose }) {
                 placeholder="Company Phone"
                 value={formData.companyPhone}
                 onChange={handleChange}
-                className="w-full p-2 border rounded bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
+                className="w-full p-3 border-0 rounded-xl bg-white dark:bg-slate-600 shadow-md focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-900 dark:text-slate-100 transition-all duration-300"
               />
-              {errors.companyPhone && <p className="text-red-500 text-sm mt-1">{errors.companyPhone}</p>}
+              {errors.companyPhone && <p className="text-red-500 text-sm mt-2">{errors.companyPhone}</p>}
             </div>
           </div>
         </div>
 
         {/* Client Details */}
-        <div className="bg-gray-100 dark:bg-gray-900/50 p-4 rounded-lg">
-          <h3 className="font-bold mb-2 text-gray-900 dark:text-white">Client Details</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="bg-gradient-to-r from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 p-6 rounded-2xl shadow-lg">
+          <h3 className="font-bold mb-4 text-slate-900 dark:text-slate-100 text-lg">Client Details</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <input
                 name="clientName"
                 placeholder="Client Name"
                 value={formData.clientName}
                 onChange={handleChange}
-                className="w-full p-2 border rounded bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
+                className="w-full p-3 border-0 rounded-xl bg-white dark:bg-slate-600 shadow-md focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-900 dark:text-slate-100 transition-all duration-300"
                 required
               />
-              {errors.clientName && <p className="text-red-500 text-sm mt-1">{errors.clientName}</p>}
+              {errors.clientName && <p className="text-red-500 text-sm mt-2">{errors.clientName}</p>}
             </div>
             <div>
               <textarea
@@ -180,38 +199,39 @@ export default function InvoiceForm({ onClose }) {
                 placeholder="Client Details (Address, etc.)"
                 value={formData.clientDetails}
                 onChange={handleChange}
-                className="w-full p-2 border rounded bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
+                className="w-full p-3 border-0 rounded-xl bg-white dark:bg-slate-600 shadow-md focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-900 dark:text-slate-100 transition-all duration-300 resize-none"
+                rows="3"
               />
             </div>
             <div>
-              <label className="text-sm text-gray-600 dark:text-gray-400">Invoice Date</label>
+              <label className="block text-sm font-medium mb-2 text-slate-700 dark:text-slate-300">Invoice Date</label>
               <input
                 name="date"
                 type="date"
                 value={formData.date}
                 onChange={handleChange}
-                className="w-full p-2 border rounded bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
+                className="w-full p-3 border-0 rounded-xl bg-white dark:bg-slate-600 shadow-md focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-900 dark:text-slate-100 transition-all duration-300"
                 required
               />
-              {errors.date && <p className="text-red-500 text-sm mt-1">{errors.date}</p>}
+              {errors.date && <p className="text-red-500 text-sm mt-2">{errors.date}</p>}
             </div>
             <div>
-              <label className="text-sm text-gray-600 dark:text-gray-400">Due Date</label>
+              <label className="block text-sm font-medium mb-2 text-slate-700 dark:text-slate-300">Due Date</label>
               <input
                 name="dueDate"
                 type="date"
                 value={formData.dueDate}
                 onChange={handleChange}
-                className="w-full p-2 border rounded bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
+                className="w-full p-3 border-0 rounded-xl bg-white dark:bg-slate-600 shadow-md focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-900 dark:text-slate-100 transition-all duration-300"
               />
-              {errors.dueDate && <p className="text-red-500 text-sm mt-1">{errors.dueDate}</p>}
+              {errors.dueDate && <p className="text-red-500 text-sm mt-2">{errors.dueDate}</p>}
             </div>
           </div>
         </div>
 
         {/* Items */}
-        <div className="bg-gray-100 dark:bg-gray-900/50 p-4 rounded-lg">
-          <h3 className="font-bold mb-2 text-gray-900 dark:text-white">Items</h3>
+        <div className="bg-gradient-to-r from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 p-6 rounded-2xl shadow-lg">
+          <h3 className="font-bold mb-4 text-slate-900 dark:text-slate-100 text-lg">Items</h3>
           {formData.items.map((item, index) => (
             <InvoiceItemRow
               key={index}
@@ -222,47 +242,62 @@ export default function InvoiceForm({ onClose }) {
               errors={errors}
             />
           ))}
-          {errors.items && <p className="text-red-500 text-sm mt-1">{errors.items}</p>}
-          <button type="button" onClick={addItem} className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-            Add Item
+          {errors.items && <p className="text-red-500 text-sm mt-2">{errors.items}</p>}
+          <button 
+            type="button" 
+            onClick={addItem} 
+            className="mt-4 px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 font-semibold"
+          >
+            + Add Item
           </button>
         </div>
 
         {/* Notes and Terms */}
-        <div className="bg-gray-100 dark:bg-gray-900/50 p-4 rounded-lg">
-          <h3 className="font-bold mb-2 text-gray-900 dark:text-white">Additional Details</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="bg-gradient-to-r from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 p-6 rounded-2xl shadow-lg">
+          <h3 className="font-bold mb-4 text-slate-900 dark:text-slate-100 text-lg">Additional Details</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <textarea
               name="notes"
               placeholder="Notes"
               value={formData.notes}
               onChange={handleChange}
-              className="w-full p-2 border rounded bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
+              className="w-full p-3 border-0 rounded-xl bg-white dark:bg-slate-600 shadow-md focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-900 dark:text-slate-100 transition-all duration-300 resize-none"
+              rows="4"
             />
             <textarea
               name="terms"
               placeholder="Terms & Conditions"
               value={formData.terms}
               onChange={handleChange}
-              className="w-full p-2 border rounded bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
+              className="w-full p-3 border-0 rounded-xl bg-white dark:bg-slate-600 shadow-md focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-900 dark:text-slate-100 transition-all duration-300 resize-none"
+              rows="4"
             />
           </div>
         </div>
 
         {/* Totals */}
-        <div className="bg-gray-100 dark:bg-gray-900/50 p-4 rounded-lg text-right space-y-1 text-gray-800 dark:text-gray-200">
-          <p>Subtotal: <span className="font-semibold">${totals.subtotal.toFixed(2)}</span></p>
-          <p>Tax: <span className="font-semibold">${totals.totalTax.toFixed(2)}</span></p>
-          <p>Discount: <span className="font-semibold">-${totals.totalDiscount.toFixed(2)}</span></p>
-          <p className="font-bold text-lg">Grand Total: <span className="font-extrabold">${totals.grandTotal.toFixed(2)}</span></p>
+        <div className="bg-gradient-to-r from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 p-6 rounded-2xl shadow-lg text-right space-y-2 text-slate-800 dark:text-slate-200">
+          <p className="text-lg">Subtotal: <span className="font-semibold">₹{totals.subtotal.toFixed(2)}</span></p>
+          <p className="text-lg">Tax: <span className="font-semibold">₹{totals.totalTax.toFixed(2)}</span></p>
+          <p className="text-lg">Discount: <span className="font-semibold">-₹{totals.totalDiscount.toFixed(2)}</span></p>
+          <p className="font-bold text-xl">Grand Total: <span className="font-extrabold text-2xl">₹{totals.grandTotal.toFixed(2)}</span></p>
           {errors.totals && <p className="text-red-500 text-sm">{errors.totals}</p>}
         </div>
 
-        <div className="flex justify-end space-x-4 pt-4 border-t dark:border-gray-700">
-            <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded hover:bg-gray-300 dark:hover:bg-gray-500">Cancel</button>
-            <button type="submit" className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
-                Create Invoice
-            </button>
+        <div className="flex justify-end space-x-4 pt-6 border-t dark:border-slate-700">
+          <button 
+            type="button" 
+            onClick={onClose} 
+            className="px-6 py-3 bg-slate-200 dark:bg-slate-600 text-slate-800 dark:text-slate-200 rounded-xl shadow-md hover:bg-slate-300 dark:hover:bg-slate-500 hover:shadow-lg transition-all duration-300 font-semibold"
+          >
+            Cancel
+          </button>
+          <button 
+            type="submit" 
+            className="px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 font-semibold"
+          >
+            Create Invoice
+          </button>
         </div>
       </form>
     </>
