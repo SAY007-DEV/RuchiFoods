@@ -25,10 +25,10 @@ export default function InvoiceForm({ onClose }) {
   useEffect(() => {
     setFormData(prev => ({
       ...prev,
-      companyName: companyDetails?.companyName || '',
-      companyAddress: companyDetails?.companyAddress || '',
-      companyEmail: companyDetails?.companyEmail || '',
-      companyPhone: companyDetails?.companyPhone || '',
+      companyName: companyDetails?.companyName || 'Ruchi Foods',
+      companyAddress: companyDetails?.companyAddress || 'thottada',
+      companyEmail: companyDetails?.companyEmail || 'samuel.nelson@altostrat.com',
+      companyPhone: companyDetails?.companyPhone || '9090909090',
     }));
   }, [companyDetails]);
 
