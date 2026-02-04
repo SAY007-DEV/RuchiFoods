@@ -14,11 +14,11 @@ const ProductManager = () => {
   const [editingId, setEditingId] = useState(null);
   const [editProduct, setEditProduct] = useState({});
 
-  // Handle adding a new product
+  
   const handleAddProduct = () => {
     if (newProduct.name && newProduct.price && newProduct.quantity) {
       const product = {
-        id: Date.now(), // Simple ID generation
+        id: Date.now(), 
         ...newProduct,
         price: parseFloat(newProduct.price),
         quantity: parseInt(newProduct.quantity),
@@ -28,27 +28,27 @@ const ProductManager = () => {
     }
   };
 
-  // Handle editing a product
+
   const handleEditProduct = (id) => {
     const product = products.find((p) => p.id === id);
     setEditingId(id);
     setEditProduct({ ...product });
   };
 
-  // Save edited product
+  
   const handleSaveEdit = () => {
     setProducts(products.map((p) => (p.id === editingId ? { ...editProduct } : p)));
     setEditingId(null);
     setEditProduct({});
   };
 
-  // Cancel editing
+
   const handleCancelEdit = () => {
     setEditingId(null);
     setEditProduct({});
   };
 
-  // Handle deleting a product
+ 
   const handleDeleteProduct = (id) => {
     setProducts(products.filter((p) => p.id !== id));
   };
