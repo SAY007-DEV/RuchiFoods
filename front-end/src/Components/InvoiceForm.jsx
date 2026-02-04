@@ -14,7 +14,7 @@ export default function InvoiceForm({ onClose }) {
     clientId: '',
     clientName: '',
     clientDetails: '',
-    date: new Date().toISOString().split('T')[0], // Prefill with current date
+    date: new Date().toISOString().split('T')[0], 
     dueDate: '',
     notes: '',
     terms: '',
@@ -22,7 +22,7 @@ export default function InvoiceForm({ onClose }) {
   });
   const [errors, setErrors] = useState({});
 
-  // Prefill company details on mount or when companyDetails changes
+  
   useEffect(() => {
     setFormData(prev => ({
       ...prev,
@@ -36,7 +36,7 @@ export default function InvoiceForm({ onClose }) {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-    // Clear error on change
+    
     if (errors[name]) {
       setErrors({ ...errors, [name]: '' });
     }
@@ -46,7 +46,7 @@ export default function InvoiceForm({ onClose }) {
     const newItems = [...formData.items];
     newItems[index][field] = value;
     setFormData({ ...formData, items: newItems });
-    // Clear item errors
+   
     const itemKey = `item_${index}_${field}`;
     if (errors[itemKey]) {
       setErrors({ ...errors, [itemKey]: '' });
@@ -78,20 +78,20 @@ export default function InvoiceForm({ onClose }) {
 
   const validateForm = () => {
     const newErrors = {};
-    // Company fields (optional but validate if filled)
+    
     if (formData.companyEmail && !/\S+@\S+\.\S+/.test(formData.companyEmail)) {
       newErrors.companyEmail = 'Invalid email format.';
     }
     if (formData.companyPhone && !/^\d{10,}$/.test(formData.companyPhone.replace(/\D/g, ''))) {
       newErrors.companyPhone = 'Phone must be at least 10 digits.';
     }
-    // Required fields
+   
     if (!formData.clientName.trim()) newErrors.clientName = 'Client name is required.';
     if (!formData.date) newErrors.date = 'Invoice date is required.';
     if (formData.dueDate && new Date(formData.dueDate) <= new Date(formData.date)) {
       newErrors.dueDate = 'Due date must be after invoice date.';
     }
-    // Items validation
+    
     formData.items.forEach((item, index) => {
       if (!item.description.trim()) newErrors[`item_${index}_description`] = 'Description is required.';
       if (item.quantity <= 0) newErrors[`item_${index}_quantity`] = 'Quantity must be greater than 0.';
@@ -100,7 +100,7 @@ export default function InvoiceForm({ onClose }) {
       if (item.discount < 0 || item.discount > 100) newErrors[`item_${index}_discount`] = 'Discount must be 0-100%.';
     });
     if (formData.items.length === 0) newErrors.items = 'At least one item is required.';
-    // Totals check
+   
     const totals = calculateTotals(formData.items);
     if (totals.grandTotal < 0) newErrors.totals = 'Grand total cannot be negative.';
     setErrors(newErrors);
@@ -113,7 +113,7 @@ export default function InvoiceForm({ onClose }) {
       try {
         await addInvoice(formData);
 
-        // Save company details for future use
+      
         saveCompanySettings({
           companyName: formData.companyName,
           companyAddress: formData.companyAddress,

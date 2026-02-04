@@ -174,7 +174,7 @@ export default function Dashboard() {
 
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        {/* Revenue Trend Chart */}
+       
         <ChartCard title="Revenue Trend">
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={revenueData}>
@@ -211,10 +211,10 @@ export default function Dashboard() {
         </ChartCard>
       </div>
 
-      {/* Recent Invoices Table */}
+     
       <InvoiceTable invoices={recentInvoices} />
 
-      {/* Invoice Form Modal */}
+      
       {isFormOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex justify-center items-center p-4">
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl w-full max-w-5xl transform transition-all">
