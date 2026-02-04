@@ -2,9 +2,6 @@ import React, { useState } from 'react';
 
 const ProductManager = () => {
   const [products, setProducts] = useState([
-    // Sample data; replace with your own or start empty
-    { id: 1, name: 'Laptop', description: 'Gaming laptop', price: 1200, quantity: 1 },
-    { id: 2, name: 'Mouse', description: 'Wireless mouse', price: 50, quantity: 2 },
   ]);
 
   const [newProduct, setNewProduct] = useState({
