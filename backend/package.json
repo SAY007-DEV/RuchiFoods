@@ -4,7 +4,7 @@
   "main": "src/app.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon app.js"
+    "dev": "nodemon src/app.js"
   },
   "devDependencies": {
     "nodemon": "^3.1.11"

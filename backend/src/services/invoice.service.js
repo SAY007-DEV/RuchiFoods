@@ -1,21 +1,40 @@
-import { readData, writeData } from '../utils/fileStorage.js';
-import { v4 as uuid } from 'uuid';
+import Invoice from '../models/invoice.model.js';
+import { calculateTotals } from '../utils/calcTotals.js';
 
-export const saveInvoice = async (invoiceData) => {
-  const invoices = await readData();
+const generateInvoiceNumber = async () => {
+  const lastInvoice = await Invoice.findOne().sort({ createdAt: -1 });
+  const lastNumber = lastInvoice?.number || '';
+  const match = /INV-(\d+)/.exec(lastNumber);
+  const nextNumber = match ? Number(match[1]) + 1 : (await Invoice.countDocuments()) + 1;
+  return `INV-${String(nextNumber).padStart(4, '0')}`;
+};
 
-  const newInvoice = {
-    id: uuid(),
+export const createInvoice = async (invoiceData) => {
+  const totals = calculateTotals(invoiceData.items || []);
+  const number = invoiceData.number || (await generateInvoiceNumber());
+
+  const invoice = await Invoice.create({
     ...invoiceData,
-    createdAt: new Date().toISOString()
-  };
+    number,
+    paymentStatus: invoiceData.paymentStatus || 'Unpaid',
+    ...totals
+  });
 
-  invoices.push(newInvoice);
-  await writeData(invoices);
-
-  return newInvoice;
+  return invoice;
 };
 
 export const fetchInvoices = async () => {
-  return await readData();
+  return Invoice.find().sort({ createdAt: -1 });
+};
+
+export const deleteInvoiceById = async (id) => {
+  return Invoice.findByIdAndDelete(id);
+};
+
+export const updateInvoiceStatus = async (id, paymentStatus) => {
+  return Invoice.findByIdAndUpdate(
+    id,
+    { paymentStatus },
+    { new: true }
+  );
 };

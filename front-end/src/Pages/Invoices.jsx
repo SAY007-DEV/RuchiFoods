@@ -6,32 +6,41 @@ import { calculateTotals } from '../utils/helpers';
 import InvoiceForm from '../Components/InvoiceForm';
 
 export default function Invoices() {
-  const { invoices, deleteInvoice } = useInvoices();
+  const { invoices, deleteInvoice, updateInvoiceStatus } = useInvoices();
   const [filterDate, setFilterDate] = useState('');
-  const [statuses, setStatuses] = useState({}); // Local state for status edits
+  const [statuses, setStatuses] = useState({});
   const [isFormOpen, setIsFormOpen] = useState(false);
 
-  // Initialize statuses on mount
   React.useEffect(() => {
     const initialStatuses = {};
-    invoices.forEach(inv => {
-      initialStatuses[inv.id] = inv.status || 'Unpaid';
+    invoices.forEach((inv) => {
+      initialStatuses[inv.id] = inv.paymentStatus || 'Unpaid';
     });
     setStatuses(initialStatuses);
   }, [invoices]);
 
-  const handleStatusChange = (id, newStatus) => {
+  const handleStatusChange = async (id, newStatus) => {
     setStatuses({ ...statuses, [id]: newStatus });
-    // In a real app, update backend; here, just local state (persists until refresh)
+    try {
+      await updateInvoiceStatus(id, newStatus);
+    } catch (error) {
+      toast.error('Failed to update status.');
+      console.error(error);
+    }
   };
 
-  const handleDelete = (id) => {
-    deleteInvoice(id);
-    toast.success('Invoice deleted successfully!');
+  const handleDelete = async (id) => {
+    try {
+      await deleteInvoice(id);
+      toast.success('Invoice deleted successfully!');
+    } catch (error) {
+      toast.error('Failed to delete invoice.');
+      console.error(error);
+    }
   };
 
   const filteredInvoices = filterDate
-    ? invoices.filter(inv => inv.date === filterDate)
+    ? invoices.filter((inv) => inv.date === filterDate)
     : invoices;
 
   return (
@@ -40,14 +49,14 @@ export default function Invoices() {
         <h2 className="text-3xl font-extrabold text-slate-900 dark:text-slate-100 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
           Invoices
         </h2>
-        <button 
-          onClick={() => setIsFormOpen(true)} 
+        <button
+          onClick={() => setIsFormOpen(true)}
           className="px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 font-semibold"
         >
           + Add New Invoice
         </button>
       </div>
-      
+
       <div className="mb-6">
         <label className="block text-sm font-semibold mb-2 text-slate-700 dark:text-slate-300">Filter by Date</label>
         <div className="flex items-center space-x-4">
@@ -67,7 +76,7 @@ export default function Invoices() {
           )}
         </div>
       </div>
-      
+
       <div className="overflow-x-auto bg-white dark:bg-slate-800 rounded-2xl shadow-xl">
         <table className="min-w-full">
           <thead className="bg-gradient-to-r from-blue-500 to-purple-500 text-white">
@@ -90,7 +99,14 @@ export default function Invoices() {
               </tr>
             ) : (
               filteredInvoices.map((inv) => {
-                const totals = calculateTotals(inv.items);
+                const totals = inv.grandTotal != null
+                  ? {
+                      subtotal: inv.subtotal || 0,
+                      totalTax: inv.totalTax || 0,
+                      totalDiscount: inv.totalDiscount || 0,
+                      grandTotal: inv.grandTotal || 0
+                    }
+                  : calculateTotals(inv.items);
                 return (
                   <tr key={inv.id} className="hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors duration-200">
                     <td className="p-4 text-slate-900 dark:text-slate-100 font-medium">{inv.number}</td>
@@ -107,6 +123,7 @@ export default function Invoices() {
                         <option value="Unpaid">Unpaid</option>
                         <option value="Paid">Paid</option>
                         <option value="Overdue">Overdue</option>
+                        <option value="Pending">Pending</option>
                       </select>
                     </td>
                     <td className="p-4 space-x-3">
@@ -131,7 +148,6 @@ export default function Invoices() {
         </table>
       </div>
 
-      {/* Invoice Form Modal */}
       {isFormOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm z-50 flex justify-center items-center p-4 animate-fade-in">
           <div className="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-2xl w-full max-w-6xl transform transition-all duration-500 scale-100 hover:scale-105">

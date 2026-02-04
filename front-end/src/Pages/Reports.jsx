@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import * as XLSX from 'xlsx';
+import api from '../utils/api';
 
 const Reports = () => {
-  // State for invoices data, loading, error, and filters
   const [invoices, setInvoices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -15,12 +14,11 @@ const Reports = () => {
   const [statusFilter, setStatusFilter] = useState('');
   const [totalRevenue, setTotalRevenue] = useState(0);
 
-  // Fetch invoices from API
   const fetchInvoices = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('/api/invoices'); // Adjust endpoint as needed
-      const invoiceData = Array.isArray(response.data) ? response.data : [];
+      const response = await api.get('/invoices');
+      const invoiceData = response.data?.data || [];
       setInvoices(invoiceData);
       calculateTotalRevenue(invoiceData);
       setError(null);
@@ -32,13 +30,11 @@ const Reports = () => {
     }
   };
 
-  // Calculate total revenue from invoices
   const calculateTotalRevenue = (data) => {
-    const total = data.reduce((sum, invoice) => sum + (invoice.totalAmount || 0), 0);
+    const total = data.reduce((sum, invoice) => sum + (invoice.grandTotal || 0), 0);
     setTotalRevenue(total);
   };
 
-  // Filter invoices based on search, date range, and status
   const filteredInvoices = invoices.filter((invoice) => {
     const matchesSearch =
       invoice.clientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -50,58 +46,55 @@ const Reports = () => {
     return matchesSearch && matchesDate && matchesStatus;
   });
 
-  // Fetch data on component mount
   useEffect(() => {
     fetchInvoices();
   }, []);
 
-  // Recalculate total revenue when filters change
   useEffect(() => {
     calculateTotalRevenue(filteredInvoices);
   }, [filteredInvoices]);
 
-  // Download PDF report
   const downloadPDF = () => {
     const doc = new jsPDF();
     doc.text('Invoice Reports', 20, 10);
     const tableColumn = [
       'Invoice Number', 'Client Name', 'Date', 'Due Date', 'Total Amount', 'Payment Status'
     ];
-    const tableRows = filteredInvoices.map(invoice => [
+    const tableRows = filteredInvoices.map((invoice) => [
       invoice.number,
       invoice.clientName,
       invoice.date,
       invoice.dueDate || 'N/A',
-      `₹${invoice.totalAmount.toFixed(2)}`,
+      `₹${(invoice.grandTotal || 0).toFixed(2)}`,
       invoice.paymentStatus
     ]);
     doc.autoTable({
       head: [tableColumn],
       body: tableRows,
-      startY: 20,
+      startY: 20
     });
     doc.save('invoice-reports.pdf');
   };
 
-  // Export to Excel
   const exportToExcel = () => {
-    const worksheet = XLSX.utils.json_to_sheet(filteredInvoices.map(invoice => ({
-      'Invoice ID': invoice.id,
-      'Invoice Number': invoice.number,
-      'Client Name': invoice.clientName,
-      'Client Email': invoice.clientEmail,
-      'Client Address': invoice.clientAddress,
-      'Invoice Date': invoice.date,
-      'Due Date': invoice.dueDate || 'N/A',
-      'Items': invoice.items.map(item => `${item.name} (Qty: ${item.quantity}, Price: ₹${item.price})`).join('; '),
-      'Subtotal': `₹${invoice.subtotal.toFixed(2)}`,
-      'Tax': `₹${invoice.tax.toFixed(2)}`,
-      'Discount': `₹${invoice.discount.toFixed(2)}`,
-      'Total Amount': `₹${invoice.totalAmount.toFixed(2)}`,
-      'Payment Status': invoice.paymentStatus,
-      'Payment Method': invoice.paymentMethod || 'N/A',
-      'Created By': invoice.createdBy
-    })));
+    const worksheet = XLSX.utils.json_to_sheet(
+      filteredInvoices.map((invoice) => ({
+        'Invoice ID': invoice.id,
+        'Invoice Number': invoice.number,
+        'Client Name': invoice.clientName,
+        'Client Address': invoice.clientDetails || '',
+        'Invoice Date': invoice.date,
+        'Due Date': invoice.dueDate || 'N/A',
+        'Items': (invoice.items || [])
+          .map((item) => `${item.description} (Qty: ${item.quantity}, Price: ₹${item.price})`)
+          .join('; '),
+        'Subtotal': `₹${(invoice.subtotal || 0).toFixed(2)}`,
+        'Tax': `₹${(invoice.totalTax || 0).toFixed(2)}`,
+        'Discount': `₹${(invoice.totalDiscount || 0).toFixed(2)}`,
+        'Total Amount': `₹${(invoice.grandTotal || 0).toFixed(2)}`,
+        'Payment Status': invoice.paymentStatus
+      }))
+    );
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Invoices');
     XLSX.writeFile(workbook, 'invoice-reports.xlsx');
@@ -129,7 +122,6 @@ const Reports = () => {
         </div>
       </div>
 
-      {/* Filters and Search */}
       <div className="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
         <input
           type="text"
@@ -161,15 +153,14 @@ const Reports = () => {
           <option value="Paid">Paid</option>
           <option value="Unpaid">Unpaid</option>
           <option value="Pending">Pending</option>
+          <option value="Overdue">Overdue</option>
         </select>
       </div>
 
-      {/* Total Revenue Summary */}
       <div className="mb-6 p-4 bg-gradient-to-r from-blue-100 to-indigo-100 dark:from-blue-900 dark:to-indigo-900 rounded-xl shadow-md">
         <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Total Revenue: ₹{totalRevenue.toFixed(2)}</h3>
       </div>
 
-      {/* Loading and Error States */}
       {loading && (
         <div className="text-center py-8">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
@@ -188,7 +179,6 @@ const Reports = () => {
         </div>
       )}
 
-      {/* Invoices Table */}
       {!loading && !error && (
         <div className="overflow-x-auto bg-white dark:bg-slate-800 rounded-2xl shadow-xl">
           <table className="min-w-full">
@@ -216,7 +206,7 @@ const Reports = () => {
                     <td className="p-4 text-slate-900 dark:text-slate-100">{invoice.clientName}</td>
                     <td className="p-4 text-slate-900 dark:text-slate-100">{invoice.date}</td>
                     <td className="p-4 text-slate-900 dark:text-slate-100">{invoice.dueDate || 'N/A'}</td>
-                    <td className="p-4 text-slate-900 dark:text-slate-100 font-semibold">₹{invoice.totalAmount.toFixed(2)}</td>
+                    <td className="p-4 text-slate-900 dark:text-slate-100 font-semibold">₹{(invoice.grandTotal || 0).toFixed(2)}</td>
                     <td className="p-4">
                       <span
                         className={`px-2 py-1 rounded-full text-sm font-medium ${

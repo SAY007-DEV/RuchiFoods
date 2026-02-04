@@ -5,12 +5,13 @@ import InvoiceItemRow from './InvoiceItemRow';
 import { calculateTotals } from '../utils/helpers';
 
 export default function InvoiceForm({ onClose }) {
-  const { addInvoice, companyDetails, saveCompanySettings } = useInvoices();
+  const { addInvoice, companyDetails, saveCompanySettings, clients } = useInvoices();
   const [formData, setFormData] = useState({
     companyName: companyDetails?.companyName || '',
     companyAddress: companyDetails?.companyAddress || '',
     companyEmail: companyDetails?.companyEmail || '',
     companyPhone: companyDetails?.companyPhone || '',
+    clientId: '',
     clientName: '',
     clientDetails: '',
     date: new Date().toISOString().split('T')[0], // Prefill with current date
@@ -50,6 +51,17 @@ export default function InvoiceForm({ onClose }) {
     if (errors[itemKey]) {
       setErrors({ ...errors, [itemKey]: '' });
     }
+  };
+
+  const handleClientSelect = (e) => {
+    const selectedId = e.target.value;
+    const selectedClient = clients.find((client) => client.id === selectedId);
+    setFormData((prev) => ({
+      ...prev,
+      clientId: selectedId,
+      clientName: selectedClient?.name || prev.clientName,
+      clientDetails: selectedClient?.address || prev.clientDetails
+    }));
   };
 
   const addItem = () => {
@@ -95,21 +107,26 @@ export default function InvoiceForm({ onClose }) {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
-      addInvoice(formData);
-      
-      // Save company details for future use
-      saveCompanySettings({
-        companyName: formData.companyName,
-        companyAddress: formData.companyAddress,
-        companyEmail: formData.companyEmail,
-        companyPhone: formData.companyPhone
-      });
+      try {
+        await addInvoice(formData);
 
-      toast.success('Invoice created successfully!');
-      onClose();
+        // Save company details for future use
+        saveCompanySettings({
+          companyName: formData.companyName,
+          companyAddress: formData.companyAddress,
+          companyEmail: formData.companyEmail,
+          companyPhone: formData.companyPhone
+        });
+
+        toast.success('Invoice created successfully!');
+        onClose();
+      } catch (error) {
+        toast.error('Failed to create invoice. Please try again.');
+        console.error(error);
+      }
     } else {
       toast.error('Please fix the errors and try again.');
     }
@@ -182,6 +199,20 @@ export default function InvoiceForm({ onClose }) {
         <div className="bg-gradient-to-r from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 p-6 rounded-2xl shadow-lg">
           <h3 className="font-bold mb-4 text-slate-900 dark:text-slate-100 text-lg">Client Details</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <select
+                value={formData.clientId}
+                onChange={handleClientSelect}
+                className="w-full p-3 border-0 rounded-xl bg-white dark:bg-slate-600 shadow-md focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-900 dark:text-slate-100 transition-all duration-300"
+              >
+                <option value="">Select Existing Client (Optional)</option>
+                {clients.map((client) => (
+                  <option key={client.id} value={client.id}>
+                    {client.name}
+                  </option>
+                ))}
+              </select>
+            </div>
             <div>
               <input
                 name="clientName"

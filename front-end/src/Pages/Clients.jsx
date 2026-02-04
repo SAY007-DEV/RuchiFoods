@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useInvoices } from '../context/InvoiceContext'; // Assuming clients are managed here
@@ -46,19 +46,24 @@ export default function Clients() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
-      if (editingClient) {
-        updateClient(editingClient.id, formData);
-        toast.success('Client updated successfully!');
-      } else {
-        addClient({ ...formData, id: Date.now(), createdAt: new Date().toISOString() });
-        toast.success('Client added successfully!');
+      try {
+        if (editingClient) {
+          await updateClient(editingClient.id, formData);
+          toast.success('Client updated successfully!');
+        } else {
+          await addClient(formData);
+          toast.success('Client added successfully!');
+        }
+        setIsModalOpen(false);
+        setEditingClient(null);
+        setFormData({ name: '', email: '', phone: '', address: '' });
+      } catch (error) {
+        toast.error('Failed to save client.');
+        console.error(error);
       }
-      setIsModalOpen(false);
-      setEditingClient(null);
-      setFormData({ name: '', email: '', phone: '', address: '' });
     } else {
       toast.error('Please fix the errors.');
     }
@@ -70,10 +75,15 @@ export default function Clients() {
     setIsModalOpen(true);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this client?')) {
-      deleteClient(id);
-      toast.success('Client deleted successfully!');
+      try {
+        await deleteClient(id);
+        toast.success('Client deleted successfully!');
+      } catch (error) {
+        toast.error('Failed to delete client.');
+        console.error(error);
+      }
     }
   };
 
