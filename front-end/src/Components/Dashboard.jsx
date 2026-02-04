@@ -4,7 +4,7 @@ import { toast } from 'react-hot-toast';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import InvoiceForm from './InvoiceForm';
 
-// Dummy data for stats
+
 const statsData = [
   {
     title: 'Total Invoices',
@@ -36,7 +36,7 @@ const statsData = [
   },
 ];
 
-// Dummy data for revenue trend chart (monthly)
+
 const revenueData = [
   { month: 'Jan', revenue: 12000 },
   { month: 'Feb', revenue: 15000 },
@@ -46,14 +46,14 @@ const revenueData = [
   { month: 'Jun', revenue: 28000 },
 ];
 
-// Dummy data for invoice status breakdown
+
 const statusData = [
-  { name: 'Paid', value: 60, color: '#10B981' }, // Green
-  { name: 'Pending', value: 30, color: '#F59E0B' }, // Yellow
-  { name: 'Overdue', value: 10, color: '#EF4444' }, // Red
+  { name: 'Paid', value: 60, color: '#10B981' }, 
+  { name: 'Pending', value: 30, color: '#F59E0B' }, 
+  { name: 'Overdue', value: 10, color: '#EF4444' }, 
 ];
 
-// Dummy data for recent invoices table
+
 const recentInvoices = [
   { id: 'INV-001', client: 'Acme Corp', date: '2023-10-01', amount: '$1,200', status: 'Paid' },
   { id: 'INV-002', client: 'Tech Solutions', date: '2023-10-05', amount: '$800', status: 'Pending' },
@@ -62,7 +62,7 @@ const recentInvoices = [
   { id: 'INV-005', client: 'Enterprise Co', date: '2023-10-20', amount: '$3,000', status: 'Pending' },
 ];
 
-// Reusable StatsCard component
+
 const StatsCard = ({ title, value, description, icon: Icon, color }) => (
   <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 border border-gray-200 dark:border-gray-700">
     <div className="flex items-center justify-between">
@@ -76,7 +76,7 @@ const StatsCard = ({ title, value, description, icon: Icon, color }) => (
   </div>
 );
 
-// Reusable ChartCard component
+
 const ChartCard = ({ title, children }) => (
   <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
     <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{title}</h3>
@@ -84,7 +84,7 @@ const ChartCard = ({ title, children }) => (
   </div>
 );
 
-// Reusable InvoiceTable component
+
 const InvoiceTable = ({ invoices }) => (
   <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
     <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
@@ -127,28 +127,28 @@ const InvoiceTable = ({ invoices }) => (
   </div>
 );
 
-// Main Dashboard component
+
 export default function Dashboard() {
   const [isFormOpen, setIsFormOpen] = useState(false);
-  // Get current month and year for subtitle
+ 
   const currentDate = new Date();
   const currentMonth = currentDate.toLocaleString('default', { month: 'long' });
   const currentYear = currentDate.getFullYear();
   const subtitle = `Overview for ${currentMonth} ${currentYear}`;
 
-  // Show toast on component mount
+ 
   useEffect(() => {
     toast.success('Welcome to your Dashboard!');
   }, []);
 
-  // Handle Create Invoice button click
+ 
   const handleCreateInvoice = () => {
     setIsFormOpen(true);
   };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6 transition-all duration-300" style={{ marginLeft: 'var(--sidebar-width, 16rem)' }}>
-      {/* Header Section */}
+     
       <div className="mb-8">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
           <div>
@@ -165,14 +165,14 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* KPI / Stats Cards */}
+    
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {statsData.map((stat, index) => (
           <StatsCard key={index} {...stat} />
         ))}
       </div>
 
-      {/* Analytics Section */}
+      
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         {/* Revenue Trend Chart */}
         <ChartCard title="Revenue Trend">
@@ -187,7 +187,7 @@ export default function Dashboard() {
           </ResponsiveContainer>
         </ChartCard>
 
-        {/* Invoice Status Breakdown */}
+       
         <ChartCard title="Invoice Status Breakdown">
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
